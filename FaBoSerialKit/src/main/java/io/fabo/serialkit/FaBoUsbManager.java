@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import io.fabo.serialkit.driver.Arduino;
 import io.fabo.serialkit.driver.DriverInterface;
+import io.fabo.serialkit.driver.G27;
 
 public class FaBoUsbManager {
 
@@ -51,9 +52,29 @@ public class FaBoUsbManager {
     private int deviceType = 0;
 
     /**
-     * Baundrate.
+     * Baudrate.
      */
     private int baudrate = FaBoUsbConst.DEFAULT_BAUNDRATE;
+
+    /**
+     * Parity bit.
+     */
+    private int parityBit = 0;
+
+    /**
+     * Stop bit.
+     */
+    private int stopBit = 0;
+
+    /**
+     * flow.
+     */
+    private int flow = 0;
+
+    /**
+     * Bitrate.
+     */
+    private int bitrate = 0;
 
     /**
      * Device.
@@ -74,12 +95,6 @@ public class FaBoUsbManager {
      * Flag of processing permission.
      */
     private boolean checkingFlag;
-
-    /**
-     * Parameter.
-     */
-    private byte[] params;
-
 
     /**
      * Constructor.
@@ -157,6 +172,8 @@ public class FaBoUsbManager {
             deviceType = FaBoUsbConst.TYPE_ARDUINO_LEONARDO;
         } else if (deviceVID == FaBoUsbConst.GENUINO_UNO_VID && devicePID == FaBoUsbConst.GENUINO_UNO_PID) {
             deviceType = FaBoUsbConst.TYPE_GENUINO_UNO;
+        } else if (deviceVID == FaBoUsbConst.G27_VID && devicePID == FaBoUsbConst.G27_PID) {
+            deviceType = FaBoUsbConst.TYPE_G27;
         } else {
             listener.onFind(device, FaBoUsbConst.TYPE_UNSUPPORTED);
             return;
@@ -245,9 +262,17 @@ public class FaBoUsbManager {
         mConnection.writeMessage(buffer);
     }
 
-    public void setParameter(int baudrate, int parity, int stopbit, int flow, int bitrate) {
+    public void setParameter(int baudrate, int parityBit, int stopBit, int flow, int bitrate) {
+        setBaudrate(baudrate);
+        setBitrate(bitrate);
+        setParityBit(parityBit);
+        setStopBit(stopBit);
+        setFlow(flow);
 
-        switch (baudrate){
+    }
+
+    public void setBaudrate(int baudrate) {
+        switch (baudrate) {
             case FaBoUsbConst.BAUNDRATE_9600:
             case FaBoUsbConst.BAUNDRATE_19200:
             case FaBoUsbConst.BAUNDRATE_38400:
@@ -256,77 +281,95 @@ public class FaBoUsbManager {
             case FaBoUsbConst.BAUNDRATE_115200:
             case FaBoUsbConst.BAUNDRATE_230400:
             case FaBoUsbConst.BAUNDRATE_250000:
+                this.baudrate = baudrate;
                 break;
             default:
-                baudrate = FaBoUsbConst.BAUNDRATE_9600;
+                this.baudrate = FaBoUsbConst.BAUNDRATE_9600;
         }
+    }
 
-        switch (bitrate){
+    public void setBitrate(int bitrate) {
+        switch (bitrate) {
             case FaBoUsbConst.BITRATE_8:
             case FaBoUsbConst.BITRATE_7:
             case FaBoUsbConst.BITRATE_6:
             case FaBoUsbConst.BITRATE_5:
+                this.bitrate = bitrate;
                 break;
             default:
-                bitrate = 8;
+                this.bitrate = FaBoUsbConst.BITRATE_8;
         }
+    }
 
-        int settingValue = 0;
-        switch (parity) {
+    public void setParityBit (int parityBit) {
+
+        switch (parityBit) {
             case FaBoUsbConst.PARITY_NONE:
-                settingValue = 0x00;
+                parityBit = 0x00;
                 break;
             case FaBoUsbConst.PARITY_ODD:
-                settingValue = 0x01;
+                parityBit = 0x01;
                 break;
             case FaBoUsbConst.PARITY_EVEN:
-                settingValue = 0x02;
+                parityBit = 0x02;
                 break;
             case FaBoUsbConst.PARITY_MARK:
-                settingValue = 0x03;
+                parityBit = 0x03;
                 break;
             case FaBoUsbConst.PARITY_SPACE:
-                settingValue = 0x04;
+                parityBit = 0x04;
                 break;
             default:
-                settingValue = 0x00;
+                parityBit = 0x00;
         }
+    }
 
-        switch (stopbit) {
+    public void setStopBit (int stopBit) {
+        switch (stopBit) {
             case FaBoUsbConst.STOP_1:
-                settingValue = settingValue | 0x00 << 3;
+                this.stopBit = 0x00;
                 break;
             case FaBoUsbConst.STOP_1_5:
-                settingValue = settingValue | 0x01 << 3;
+                this.stopBit = 0x01;
                 break;
             case FaBoUsbConst.STOP_2:
-                settingValue = settingValue | 0x02 << 3;
+                //settingValue = settingValue | 0x02 << 3;
+                this.stopBit = 0x02;
                 break;
             default:
-                settingValue = 0x00 << 3;
+                this.stopBit = 0x00;
         }
+    }
 
+    public void setFlow(int flow) {
         switch (flow) {
             case FaBoUsbConst.FLOW_CONTROL_OFF:
-                settingValue = settingValue | 0x00 << 6;
+                this.flow = 0x00;
             case FaBoUsbConst.FLOW_CONTROL_RTS_CTS:
-                settingValue = settingValue | 0x01 << 6;
+                this.flow = 0x01;
             case FaBoUsbConst.FLOW_CONTROL_DSR_DTR:
-                settingValue = settingValue | 0x02 << 6;
+                this.flow = 0x02;
             case FaBoUsbConst.FLOW_CONTROL_XON_XOFF:
-                settingValue = settingValue | 0x03 << 6;
+                this.flow = 0x03;
+                //settingValue = settingValue | 0x03 << 6;
             default:
-                settingValue = 0x00 << 6;
+                this.flow = 0x00;
         }
+    }
 
-        params = new byte[]{(byte)(baudrate & 255),
+    public byte[] getParams() {
+        int settingValue = this.parityBit | this.stopBit << 3 | this.flow << 6;
+        byte params[] = new byte[]{(byte)(baudrate & 255),
                 (byte)(baudrate >> 8 & 255),
                 (byte)(baudrate >> 16 & 255),
                 (byte)(baudrate >> 24 & 255),
                 (byte)0,
                 (byte)settingValue,
                 (byte)bitrate};
+
+        return params;
     }
+
 
     /**
      * Close connection.
@@ -493,7 +536,12 @@ public class FaBoUsbManager {
                     || deviceType == FaBoUsbConst.TYPE_ARDUINO_CC_UNO
                     || deviceType == FaBoUsbConst.TYPE_GENUINO_UNO) {
                 DriverInterface driver = new Arduino();
-                driver.setParameter(connection, params);
+                driver.setParameter(connection, getParams());
+            } else if(deviceType == FaBoUsbConst.TYPE_G27){
+                Log.i(TAG, "G27!!!!!");
+                DriverInterface driver = new G27();
+                setBaudrate(FaBoUsbConst.BAUNDRATE_57600);
+                driver.setParameter(connection, getParams());
             }
 
             this.listener.onStatusChanged(mDevice, FaBoUsbConst.CONNECTED);

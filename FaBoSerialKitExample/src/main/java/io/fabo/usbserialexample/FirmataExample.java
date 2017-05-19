@@ -283,7 +283,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
     public void onFind(UsbDevice device, int type) {
         Log.i(TAG, "onFind()");
         Log.i(TAG, "deivceName:" + device.getDeviceName());
-        mDevice = device;
+        if(type != FaBoUsbConst.TYPE_UNSUPPORTED) {
+            mDevice = device;
+        }
     }
 
     @Override

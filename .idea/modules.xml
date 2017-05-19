@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/FaBo-Serial-Kit.iml" filepath="$PROJECT_DIR$/FaBo-Serial-Kit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FaBoSerialKit/FaBoSerialKit.iml" filepath="$PROJECT_DIR$/FaBoSerialKit/FaBoSerialKit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FaBoSerialKitExample/FaBoSerialKitExample.iml" filepath="$PROJECT_DIR$/FaBoSerialKitExample/FaBoSerialKitExample.iml" />
+    </modules>
+  </component>
+</project>

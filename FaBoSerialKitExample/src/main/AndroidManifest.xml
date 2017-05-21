@@ -51,6 +51,23 @@
                 android:resource="@xml/device_filter" />
 
         </activity>
+
+        <activity android:name=".WriteExample"
+            android:launchMode="singleInstance"
+            android:label="Firmata Example"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+
+        </activity>
     </application>
 
 </manifest>

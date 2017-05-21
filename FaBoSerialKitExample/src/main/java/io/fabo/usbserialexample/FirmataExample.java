@@ -44,6 +44,8 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
     private Button mSendButton7;
     private Button mSendButton8;
     private Button mSendButton9;
+    private Button mSendButton10;
+    private Button mSendButton11;
     private UsbDevice mDevice;
     private Spinner mSpeedSpinner;
     private EditText mEditText;
@@ -62,6 +64,7 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
                 FaBoUsbConst.BITRATE_8);
         mFaBoUsbManager.setListener(this);
 
+        // Connect
         mConnectButton = (Button) findViewById(R.id.connect_button);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +75,7 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
+        // Disconnect
         mDisconnectButton = (Button) findViewById(R.id.disconnect_button);
         mDisconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,22 +95,81 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
 
         });
 
+        // Get version
         mSendButton1 = (Button) findViewById(R.id.send_button1);
         mSendButton1.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-                if(mDevice != null) {
+                if (mDevice != null) {
                     byte[] commandData = {(byte)0xF9};
-                    //byte[] commandData = {(byte)0xF0, (byte)0x6B, (byte)0xF7};
                     mFaBoUsbManager.writeBuffer(commandData);
+                }
+            }
+        });
+
+        // Monitaring pin
+        mSendButton2 = (Button) findViewById(R.id.send_button2);
+        mSendButton2.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                if (mDevice != null) {
+                    byte[] command = new byte[2];
+                    // AnalogPin A0-A5の値に変化があったら通知する設定をおこなう(Firmata)
+                    for(int analogPin = 0; analogPin < 7; analogPin++) {
+                        command[0] = (byte) (FirmataV32.REPORT_ANALOG + analogPin);
+                        command[1] = (byte) FirmataV32.ENABLE;
+                        mFaBoUsbManager.writeBuffer(command);
+                        Log.i(TAG, "send1:" + analogPin);
+                    }
+
+                    // Portのデジタル値に変化があったら通知する設定をおこなう(Firmata)
+                    for(int digitalPort = 0; digitalPort < 3; digitalPort++) {
+                        command[0] = (byte) (FirmataV32.REPORT_DIGITAL + digitalPort);
+                        command[1] = (byte) FirmataV32.ENABLE;
+                        Log.i(TAG, "send1:" + digitalPort);
+                        mFaBoUsbManager.writeBuffer(command);
+                    }
+                }
+            }
+        });
+
+        // Stop monitoring ping
+        mSendButton3 = (Button) findViewById(R.id.send_button3);
+        mSendButton3.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                if(mDevice != null) {
+                    byte[] command = new byte[2];
+                    // AnalogPin A0-A5の値に変化があったら通知する設定をおこなう(Firmata)
+                    for(int analogPin = 0; analogPin < 7; analogPin++) {
+                        command[0] = (byte) (FirmataV32.REPORT_ANALOG + analogPin);
+                        command[1] = (byte) FirmataV32.DISABLE;
+                        mFaBoUsbManager.writeBuffer(command);
+                        Log.i(TAG, "send1:" + analogPin);
+                    }
+
+                    // Portのデジタル値に変化があったら通知する設定をおこなう(Firmata)
+                    for(int digitalPort = 0; digitalPort < 3; digitalPort++) {
+                        command[0] = (byte) (FirmataV32.REPORT_DIGITAL + digitalPort);
+                        command[1] = (byte) FirmataV32.DISABLE;
+                        Log.i(TAG, "send1:" + digitalPort);
+                        mFaBoUsbManager.writeBuffer(command);
+                    }
+
+                    //byte[] commandData = {(byte)0xF9};
+                    //byte[] commandData = {(byte)0xF0, (byte)0x6B, (byte)0xF7};
+                    //mFaBoUsbManager.writeBuffer(commandData);
                 }
                 //
             }
         });
 
-        mSendButton2 = (Button) findViewById(R.id.send_button2);
-        mSendButton2.setOnClickListener(new View.OnClickListener(){
+        // Motor forward
+        mSendButton4 = (Button) findViewById(R.id.send_button4);
+        mSendButton4.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -124,8 +187,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton3 = (Button) findViewById(R.id.send_button3);
-        mSendButton3.setOnClickListener(new View.OnClickListener(){
+        // Motor back
+        mSendButton5 = (Button) findViewById(R.id.send_button5);
+        mSendButton5.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -143,8 +207,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton4 = (Button) findViewById(R.id.send_button4);
-        mSendButton4.setOnClickListener(new View.OnClickListener(){
+        // STOP
+        mSendButton6 = (Button) findViewById(R.id.send_button6);
+        mSendButton6.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -152,9 +217,6 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
 
                     byte[] configCommandData = {START_SYSEX, I2C_CONFIG, (byte)0x00, (byte)0x00, END_SYSEX};
                     mFaBoUsbManager.writeBuffer(configCommandData);
-                    int speed = 50;
-                    byte speedLsb = (byte)(((speed << 2) | DRV8830_BACK) & 0x7f);
-                    byte speedMsb = (byte)((((speed << 2) | DRV8830_BACK) >> 7 ) & 0x7f);
 
                     byte[] commandData = {START_SYSEX, I2C_REQUEST, DRV8830_ADDRESS, 0x00, 0x00, 0x00, 0x00, 0x00, END_SYSEX};
                     mFaBoUsbManager.writeBuffer(commandData);
@@ -162,8 +224,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton5 = (Button) findViewById(R.id.send_button5);
-        mSendButton5.setOnClickListener(new View.OnClickListener(){
+        // Servo
+        mSendButton7 = (Button) findViewById(R.id.send_button7);
+        mSendButton7.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -182,8 +245,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton6 = (Button) findViewById(R.id.send_button6);
-        mSendButton6.setOnClickListener(new View.OnClickListener(){
+        // Servo
+        mSendButton8 = (Button) findViewById(R.id.send_button8);
+        mSendButton8.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -198,8 +262,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton7 = (Button) findViewById(R.id.send_button7);
-        mSendButton7.setOnClickListener(new View.OnClickListener(){
+        // Servo
+        mSendButton9 = (Button) findViewById(R.id.send_button9);
+        mSendButton9.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -213,8 +278,11 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
                 }
             }
         });
-        mSendButton8 = (Button) findViewById(R.id.send_button8);
-        mSendButton8.setOnClickListener(new View.OnClickListener(){
+
+
+        // LED D2 ON
+        mSendButton10 = (Button) findViewById(R.id.send_button10);
+        mSendButton10.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -226,8 +294,9 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
             }
         });
 
-        mSendButton9 = (Button) findViewById(R.id.send_button9);
-        mSendButton9.setOnClickListener(new View.OnClickListener(){
+        // LED D2 OFF
+        mSendButton11 = (Button) findViewById(R.id.send_button11);
+        mSendButton11.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -242,6 +311,7 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
 
 
         mEditText = (EditText)findViewById(R.id.receive_text);
+        mEditText.setFocusable(false);
 
     }
 

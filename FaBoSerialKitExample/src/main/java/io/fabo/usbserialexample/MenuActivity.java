@@ -34,6 +34,7 @@ public class MenuActivity extends AppCompatActivity {
         // 値を追加
         mAdapter.add("Serial Example");
         mAdapter.add("Firmata Example");
+        mAdapter.add("Write Example");
 
         // ListViewの取り込み
         mListView = (ListView) findViewById(R.id.menu_listview);
@@ -52,6 +53,10 @@ public class MenuActivity extends AppCompatActivity {
                 } else if(position == 1) {
                     Intent mIntent = new Intent();
                     mIntent.setClassName("io.fabo.usbserialexample", "io.fabo.usbserialexample.FirmataExample");
+                    startActivity(mIntent);
+                } else if(position == 2) {
+                    Intent mIntent = new Intent();
+                    mIntent.setClassName("io.fabo.usbserialexample", "io.fabo.usbserialexample.WriteExample");
                     startActivity(mIntent);
                 }
             }

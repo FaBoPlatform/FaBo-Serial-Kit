@@ -43,53 +43,67 @@
                 android:id="@+id/send_button2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Motor forward"
+                android:text="Monitaring pin"
                 />
 
             <Button
                 android:id="@+id/send_button3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Motor back"
+                android:text="Stop monitating pin"
                 />
 
             <Button
                 android:id="@+id/send_button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Motor stop"
+                android:text="Motor forward"
                 />
 
             <Button
                 android:id="@+id/send_button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PWM Center"
+                android:text="Motor back"
                 />
 
             <Button
                 android:id="@+id/send_button6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PWM Left"
+                android:text="Motor stop"
                 />
 
             <Button
                 android:id="@+id/send_button7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PWM Right"
+                android:text="PWM Center"
                 />
 
             <Button
                 android:id="@+id/send_button8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LED D2 ON"
+                android:text="PWM Left"
                 />
 
             <Button
                 android:id="@+id/send_button9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PWM Right"
+                />
+
+            <Button
+                android:id="@+id/send_button10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LED D2 ON"
+                />
+
+            <Button
+                android:id="@+id/send_button11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="LED D2 OFF"

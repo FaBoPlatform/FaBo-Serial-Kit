@@ -583,7 +583,7 @@ public class FaBoUsbManager {
                 s += Integer.toHexString(0xff & writeBuffer[i]);
                 Log.i(TAG, s);
             }
-            connection.bulkTransfer(endpointOUT, writeBuffer, writeBuffer.length, 0);
+            connection.bulkTransfer(endpointOUT, writeBuffer, writeBuffer.length, 100);
             Log.i(TAG, "Write End");
         }
 

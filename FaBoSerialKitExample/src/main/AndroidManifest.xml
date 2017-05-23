@@ -54,7 +54,7 @@
 
         <activity android:name=".WriteExample"
             android:launchMode="singleInstance"
-            android:label="Firmata Example"
+            android:label="Write Example"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />

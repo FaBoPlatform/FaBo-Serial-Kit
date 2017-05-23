@@ -32,7 +32,7 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
      * TAG
      */
     private final String TAG = "USB";
-
+    private Button mFindButton;
     private Button mConnectButton;
     private Button mDisconnectButton;
     private Button mSendButton1;
@@ -65,12 +65,24 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
         mFaBoUsbManager.setListener(this);
 
         // Connect
+        mFindButton = (Button) findViewById(R.id.find_button);
+        mFindButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditText.setText("デバイスを検索中");
+                mFaBoUsbManager.findDevice();
+            }
+        });
+
+        // Connect
         mConnectButton = (Button) findViewById(R.id.connect_button);
         mConnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(mDevice != null) {
                     mFaBoUsbManager.connection(mDevice);
+                } else {
+                    mEditText.setText("デバイスが見つかりません。Find deviceを選択してください。");
                 }
             }
         });
@@ -87,7 +99,7 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mEditText.setText("");
+                        mEditText.setText("Disconnected");
                     }
                 });
             }
@@ -350,16 +362,39 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
     }
 
     @Override
-    public void onFind(UsbDevice device, int type) {
+    public void onFind(final UsbDevice device, int type) {
         Log.i(TAG, "onFind()");
         Log.i(TAG, "deivceName:" + device.getDeviceName());
-        if(type != FaBoUsbConst.TYPE_UNSUPPORTED) {
+        Log.i(TAG, "type:"  + type);
+
+        if(type == FaBoUsbConst.TYPE_ARDUINO_CC_UNO) {
+            Log.i(TAG, "TYPE_ARDUINO_CC_UNO");
             mDevice = device;
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mEditText.setText("Find " + device.getDeviceName());
+                    mEditText.invalidate();
+                }
+            });
+
+        } else if(type == FaBoUsbConst.TYPE_ARDUINO_UNO) {
+            Log.i(TAG, "TYPE_ARDUINO_UNO");
+            mDevice = device;
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mEditText.setText("Find " + device.getDeviceName());
+                    mEditText.invalidate();
+
+                }
+            });
+
         }
     }
 
     @Override
-    public void onStatusChanged(UsbDevice device, int status) {
+    public void onStatusChanged(final UsbDevice device, int status) {
         Log.i(TAG, "onStatusChanged:" + status);
         if(status == FaBoUsbConst.ATTACHED) {
             mDevice = device;
@@ -367,6 +402,14 @@ public class FirmataExample extends AppCompatActivity implements FaBoUsbListener
         else if(status == FaBoUsbConst.CONNECTED) {
             Log.i(TAG, "Write");
             mDevice = device;
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mEditText.setText("Connected " + device.getDeviceName());
+                }
+            });
+
+
         }
     }
 

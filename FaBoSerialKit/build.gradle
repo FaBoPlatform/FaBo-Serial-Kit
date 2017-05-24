@@ -38,7 +38,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${repo.absolutePath}"
-            pom.version = '0.9.3'
+            pom.version = '0.9.4'
             pom.groupId = 'io.fabo'
             pom.artifactId = 'serialkit'
         }

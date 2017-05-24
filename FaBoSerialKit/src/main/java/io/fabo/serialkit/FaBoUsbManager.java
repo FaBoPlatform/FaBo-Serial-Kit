@@ -527,6 +527,11 @@ public class FaBoUsbManager {
             }
 
             // Open device.
+            if(this.mDevice == null) {
+                return;
+            }
+
+            // Connect Devices.
             connection = mUsbManager.openDevice(this.mDevice);
             connection.claimInterface(usbInterface, forceClaim);
 

@@ -29,7 +29,7 @@ public class FaBoUsbManager {
     /**
      * Flag
      */
-    private final boolean DEBUG = true;
+    private final boolean DEBUG = false;
 
     /**
      * UsbManager.
@@ -543,7 +543,6 @@ public class FaBoUsbManager {
                 DriverInterface driver = new Arduino();
                 driver.setParameter(connection, getParams());
             } else if(deviceType == FaBoUsbConst.TYPE_G27){
-                Log.i(TAG, "G27!!!!!");
                 DriverInterface driver = new G27();
                 setBaudrate(FaBoUsbConst.BAUNDRATE_57600);
                 driver.setParameter(connection, getParams());
@@ -586,10 +585,11 @@ public class FaBoUsbManager {
                     s += "0x";
                 }
                 s += Integer.toHexString(0xff & writeBuffer[i]);
-                Log.i(TAG, s);
+                if(DEBUG) {
+                    Log.i(TAG, s);
+                }
             }
             connection.bulkTransfer(endpointOUT, writeBuffer, writeBuffer.length, 100);
-            Log.i(TAG, "Write End");
         }
 
         /**

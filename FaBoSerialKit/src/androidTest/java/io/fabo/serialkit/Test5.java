@@ -41,7 +41,7 @@ public class Test5 implements FaBoUsbListenerInterface {
     }
 
     @Override
-    public void onFind(int type, UsbDevice device) {
+    public void onFind(UsbDevice device, int type) {
         // Find Arduino
         if(type == TestConst.TEST_TYPE) {
             if(arduinoDeviceId1 == 0) {
@@ -55,10 +55,10 @@ public class Test5 implements FaBoUsbListenerInterface {
     }
 
     @Override
-    public void onStatusChanged(int deviceId, int status) {
-        if(status == FaBoUsbConst.CONNECTED && arduinoDeviceId1 == deviceId) {
+    public void onStatusChanged(UsbDevice device, int status) {
+        if(status == FaBoUsbConst.CONNECTED && arduinoDeviceId1 == device.getDeviceId()) {
             mFaBoUsbMangerArduino1.writeBuffer(TEST_WORD1.getBytes());
-        } else if(status == FaBoUsbConst.CONNECTED && arduinoDeviceId2 == deviceId) {
+        } else if(status == FaBoUsbConst.CONNECTED && arduinoDeviceId2 == device.getDeviceId()) {
             mFaBoUsbMangerArduino2.writeBuffer(TEST_WORD2.getBytes());
         }
     }

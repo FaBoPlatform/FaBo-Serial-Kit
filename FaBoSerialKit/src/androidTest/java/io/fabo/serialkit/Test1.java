@@ -32,16 +32,18 @@ public class Test1 implements FaBoUsbListenerInterface {
     }
 
     @Override
-    public void onFind(int type, UsbDevice device) {
+    public void onFind(UsbDevice device, int type) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             assertEquals(TestConst.TEST_DEVICE, device.getProductName());
         }
         assertEquals(TestConst.TEST_TYPE, type);
     }
 
+
     @Override
-    public void onStatusChanged(int deviceId, int status) {
+    public void onStatusChanged(UsbDevice device, int status) {
     }
+
 
     @Override
     public void readBuffer(int deviceId, byte[] buffer) {

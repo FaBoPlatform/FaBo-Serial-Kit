@@ -18,6 +18,7 @@ import java.util.Iterator;
 import io.fabo.serialkit.driver.Arduino;
 import io.fabo.serialkit.driver.DriverInterface;
 import io.fabo.serialkit.driver.G27;
+import io.fabo.serialkit.driver.Monostick;
 
 public class FaBoUsbManager {
 
@@ -174,6 +175,8 @@ public class FaBoUsbManager {
             deviceType = FaBoUsbConst.TYPE_GENUINO_UNO;
         } else if (deviceVID == FaBoUsbConst.G27_VID && devicePID == FaBoUsbConst.G27_PID) {
             deviceType = FaBoUsbConst.TYPE_G27;
+        } else if (deviceVID == FaBoUsbConst.MONOSTICK_VID && devicePID == FaBoUsbConst.MONOSTICKK_PID) {
+            deviceType = FaBoUsbConst.TYPE_MONOSTICK;
         } else {
             listener.onFind(device, FaBoUsbConst.TYPE_UNSUPPORTED);
             return;
@@ -190,6 +193,27 @@ public class FaBoUsbManager {
         } else {
             this.mDevice = device;
             listener.onFind(device, deviceType);
+        }
+    }
+
+    /**
+     * deviceTypeからデバイス名を取得.
+     * @param deviceType
+     * @return
+     */
+    public String getDeviceName(int deviceType) {
+        if (deviceType == FaBoUsbConst.TYPE_ARDUINO_CC_UNO) {
+            return "Arduino.cc Uno";
+        } else if (deviceType == FaBoUsbConst.TYPE_ARDUINO_LEONARDO) {
+            return "Arduino Leonardo";
+        } else if (deviceType == FaBoUsbConst.TYPE_ARDUINO_UNO) {
+            return "Arduino Uno";
+        } else if (deviceType == FaBoUsbConst.TYPE_GENUINO_UNO) {
+            return "Genuino Uno";
+        } else if (deviceType == FaBoUsbConst.TYPE_MONOSTICK) {
+            return "Monostick";
+        } else {
+            return "Unkown";
         }
     }
 
@@ -545,6 +569,9 @@ public class FaBoUsbManager {
             } else if(deviceType == FaBoUsbConst.TYPE_G27){
                 DriverInterface driver = new G27();
                 setBaudrate(FaBoUsbConst.BAUNDRATE_57600);
+                driver.setParameter(connection, getParams());
+            } else if(deviceType == FaBoUsbConst.TYPE_MONOSTICK){
+                DriverInterface driver = new Monostick();
                 driver.setParameter(connection, getParams());
             }
 

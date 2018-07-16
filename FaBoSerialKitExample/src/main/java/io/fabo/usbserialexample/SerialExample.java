@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.fabo.serialkit.FaBoUsbConst;
 import io.fabo.serialkit.FaBoUsbListenerInterface;
 import io.fabo.serialkit.FaBoUsbManager;
@@ -29,9 +32,14 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
     private Button mSendButton1;
     private Button mSendButton2;
     private Button mSendButton3;
-    private UsbDevice mDevice;
+    private UsbDevice mDevice = null;
+
+    private Spinner mDeviceSpinner;
     private Spinner mSpeedSpinner;
     private EditText mEditText;
+    private List<UsbDevice> mDevices = new ArrayList<UsbDevice>(0);
+    private List<String> mNames = new ArrayList<String>(0);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +48,6 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
         setContentView(R.layout.activity_serial);
 
         mFaBoUsbManager = new FaBoUsbManager(this);
-        mFaBoUsbManager.setParameter(FaBoUsbConst.BAUNDRATE_115200,
-                FaBoUsbConst.PARITY_NONE,
-                FaBoUsbConst.STOP_1,
-                FaBoUsbConst.FLOW_CONTROL_OFF,
-                FaBoUsbConst.BITRATE_8);
         mFaBoUsbManager.setListener(this);
 
         mConnectButton = (Button) findViewById(R.id.connect_button);
@@ -109,11 +112,24 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
             }
         });
 
+        mDeviceSpinner = (Spinner) findViewById(R.id.device_spinner);
+        mDeviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mDevice = mDevices.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         mSpeedSpinner = (Spinner) findViewById(R.id.speed_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+        ArrayAdapter<CharSequence> mSpeedAdapter = ArrayAdapter.createFromResource(this,
                 R.array.speed_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpeedSpinner.setAdapter(adapter);
+        mSpeedAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpeedSpinner.setAdapter(mSpeedAdapter);
         mSpeedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -174,18 +190,40 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
     public void onFind(UsbDevice device, int type) {
         Log.i(TAG, "onFind()");
         Log.i(TAG, "deivceName:" + device.getDeviceName());
-        mDevice = device;
+        Log.i(TAG, "type" + type);
+
+        if(!mDevices.contains(device)) {
+            if (mDevice == null) {
+                mDevice = device;
+
+                mFaBoUsbManager.setParameter(FaBoUsbConst.BAUNDRATE_9600,
+                        FaBoUsbConst.PARITY_NONE,
+                        FaBoUsbConst.STOP_1,
+                        FaBoUsbConst.FLOW_CONTROL_OFF,
+                        FaBoUsbConst.BITRATE_8);
+            }
+
+            mDevices.add(device);
+            mNames.add(mFaBoUsbManager.getDeviceName(type) + "(" + device.getDeviceName() + ")");
+
+            ArrayAdapter<String> mDeviceAdapter
+                    = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_spinner_item,
+                    mNames);
+
+            mDeviceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            mDeviceSpinner.setAdapter(mDeviceAdapter);
+        }
     }
 
     @Override
     public void onStatusChanged(UsbDevice device, int status) {
         Log.i(TAG, "onStatusChanged:" + status);
         if(status == FaBoUsbConst.ATTACHED) {
-            mDevice = device;
+            Log.i(TAG, "ATTACHED");
         }
         else if(status == FaBoUsbConst.CONNECTED) {
-            Log.i(TAG, "Write");
-            mDevice = device;
+            Log.i(TAG, "CONNECTED");
         }
     }
 

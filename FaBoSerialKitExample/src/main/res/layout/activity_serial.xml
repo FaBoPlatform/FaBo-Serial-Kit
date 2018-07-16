@@ -14,6 +14,11 @@
         >
 
         <Spinner
+            android:id="@+id/device_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <Spinner
             android:id="@+id/speed_spinner"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />

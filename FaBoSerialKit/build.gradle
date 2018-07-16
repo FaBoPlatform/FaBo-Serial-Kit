@@ -20,7 +20,6 @@ android {
         }
     }
 }
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -34,11 +33,12 @@ def repo = new File(rootDir, "repository")
 
 apply plugin: 'maven'
 
+// ./gradlew uploadArchives
 uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${repo.absolutePath}"
-            pom.version = '0.9.6'
+            pom.version = '0.9.7'
             pom.groupId = 'io.fabo'
             pom.artifactId = 'serialkit'
         }

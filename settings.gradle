@@ -1,1 +1,1 @@
-include ':FaBoSerialKitExample', ':FaBoSerialKit'
+include ':FaBoSerialKitExample', ':FaBoSerialKit', ':faboserialkit2'

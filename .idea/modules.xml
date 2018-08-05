@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/FaBoSerialKit/FaBoSerialKit.iml" filepath="$PROJECT_DIR$/FaBoSerialKit/FaBoSerialKit.iml" />
       <module fileurl="file://$PROJECT_DIR$/FaBoSerialKitExample/FaBoSerialKitExample.iml" filepath="$PROJECT_DIR$/FaBoSerialKitExample/FaBoSerialKitExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/SerialKit.iml" filepath="$PROJECT_DIR$/SerialKit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/faboserialkit2/faboserialkit2.iml" filepath="$PROJECT_DIR$/faboserialkit2/faboserialkit2.iml" />
     </modules>
   </component>
 </project>

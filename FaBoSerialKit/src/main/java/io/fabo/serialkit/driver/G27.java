@@ -2,10 +2,13 @@ package io.fabo.serialkit.driver;
 
 import android.hardware.usb.UsbDeviceConnection;
 
+import io.fabo.serialkit.FaBoUsbParams;
+
 public class G27 implements DriverInterface {
 
-    public void setParameter(UsbDeviceConnection connection, byte[] params){
+    public void setParameter(UsbDeviceConnection connection, FaBoUsbParams params){
 
+        /*
         connection.controlTransfer(USB_CONTROL_OUT,
                 SET_LINE_CODING, //requestType
                 0, //value
@@ -22,5 +25,6 @@ public class G27 implements DriverInterface {
                 null, // buffer
                 0, // length
                 TIMEOUT);
+                */
     }
 }

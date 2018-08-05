@@ -231,6 +231,7 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
     public void readBuffer(int deviceId, byte[] buffer) {
 
         final String result = new String(buffer);
+        Log.i(TAG, "result:" + result);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

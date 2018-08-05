@@ -17,8 +17,8 @@ import java.util.Iterator;
 
 import io.fabo.serialkit.driver.Arduino;
 import io.fabo.serialkit.driver.DriverInterface;
+import io.fabo.serialkit.driver.FT232R;
 import io.fabo.serialkit.driver.G27;
-import io.fabo.serialkit.driver.Monostick;
 
 public class FaBoUsbManager {
 
@@ -30,7 +30,7 @@ public class FaBoUsbManager {
     /**
      * Flag
      */
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
 
     /**
      * UsbManager.
@@ -96,6 +96,11 @@ public class FaBoUsbManager {
      * Flag of processing permission.
      */
     private boolean checkingFlag;
+
+    /**
+     * USBParam
+     */
+    private FaBoUsbParams usbParams = new FaBoUsbParams();
 
     /**
      * Constructor.
@@ -175,14 +180,16 @@ public class FaBoUsbManager {
             deviceType = FaBoUsbConst.TYPE_GENUINO_UNO;
         } else if (deviceVID == FaBoUsbConst.G27_VID && devicePID == FaBoUsbConst.G27_PID) {
             deviceType = FaBoUsbConst.TYPE_G27;
-        } else if (deviceVID == FaBoUsbConst.MONOSTICK_VID && devicePID == FaBoUsbConst.MONOSTICKK_PID) {
-            deviceType = FaBoUsbConst.TYPE_MONOSTICK;
+        } else if (deviceVID == FaBoUsbConst.FT232R_VID && devicePID == FaBoUsbConst.FT232R_PID) {
+            deviceType = FaBoUsbConst.TYPE_FT232R;
         } else {
             listener.onFind(device, FaBoUsbConst.TYPE_UNSUPPORTED);
             return;
         }
 
-        Log.i(TAG, "mUsbManager.hasPermission(device):" + mUsbManager.hasPermission(device));
+        if(DEBUG) {
+            Log.i(TAG, "mUsbManager.hasPermission(device):" + mUsbManager.hasPermission(device));
+        }
 
         if(!mUsbManager.hasPermission(device)) {
             if(!this.checkingFlag) {
@@ -210,8 +217,8 @@ public class FaBoUsbManager {
             return "Arduino Uno";
         } else if (deviceType == FaBoUsbConst.TYPE_GENUINO_UNO) {
             return "Genuino Uno";
-        } else if (deviceType == FaBoUsbConst.TYPE_MONOSTICK) {
-            return "Monostick";
+        } else if (deviceType == FaBoUsbConst.TYPE_FT232R) {
+            return "FT232R";
         } else {
             return "Unkown";
         }
@@ -287,111 +294,31 @@ public class FaBoUsbManager {
     }
 
     public void setParameter(int baudrate, int parityBit, int stopBit, int flow, int bitrate) {
-        setBaudrate(baudrate);
-        setBitrate(bitrate);
-        setParityBit(parityBit);
-        setStopBit(stopBit);
-        setFlow(flow);
-
+        usbParams.setBaudrate(baudrate);
+        usbParams.setBitrate(bitrate);
+        usbParams.setParityBit(parityBit);
+        usbParams.setStopBit(stopBit);
+        usbParams.setFlow(flow);
     }
 
     public void setBaudrate(int baudrate) {
-        switch (baudrate) {
-            case FaBoUsbConst.BAUNDRATE_9600:
-            case FaBoUsbConst.BAUNDRATE_19200:
-            case FaBoUsbConst.BAUNDRATE_38400:
-            case FaBoUsbConst.BAUNDRATE_57600:
-            case FaBoUsbConst.BAUNDRATE_74800:
-            case FaBoUsbConst.BAUNDRATE_115200:
-            case FaBoUsbConst.BAUNDRATE_230400:
-            case FaBoUsbConst.BAUNDRATE_250000:
-                this.baudrate = baudrate;
-                break;
-            default:
-                this.baudrate = FaBoUsbConst.BAUNDRATE_9600;
-        }
+        usbParams.setBaudrate(baudrate);
     }
 
     public void setBitrate(int bitrate) {
-        switch (bitrate) {
-            case FaBoUsbConst.BITRATE_8:
-            case FaBoUsbConst.BITRATE_7:
-            case FaBoUsbConst.BITRATE_6:
-            case FaBoUsbConst.BITRATE_5:
-                this.bitrate = bitrate;
-                break;
-            default:
-                this.bitrate = FaBoUsbConst.BITRATE_8;
-        }
+        usbParams.setBitrate(bitrate);
     }
 
     public void setParityBit (int parityBit) {
-
-        switch (parityBit) {
-            case FaBoUsbConst.PARITY_NONE:
-                parityBit = 0x00;
-                break;
-            case FaBoUsbConst.PARITY_ODD:
-                parityBit = 0x01;
-                break;
-            case FaBoUsbConst.PARITY_EVEN:
-                parityBit = 0x02;
-                break;
-            case FaBoUsbConst.PARITY_MARK:
-                parityBit = 0x03;
-                break;
-            case FaBoUsbConst.PARITY_SPACE:
-                parityBit = 0x04;
-                break;
-            default:
-                parityBit = 0x00;
-        }
+        usbParams.setParityBit(parityBit);
     }
 
     public void setStopBit (int stopBit) {
-        switch (stopBit) {
-            case FaBoUsbConst.STOP_1:
-                this.stopBit = 0x00;
-                break;
-            case FaBoUsbConst.STOP_1_5:
-                this.stopBit = 0x01;
-                break;
-            case FaBoUsbConst.STOP_2:
-                //settingValue = settingValue | 0x02 << 3;
-                this.stopBit = 0x02;
-                break;
-            default:
-                this.stopBit = 0x00;
-        }
+        usbParams.setStopBit(stopBit);
     }
 
     public void setFlow(int flow) {
-        switch (flow) {
-            case FaBoUsbConst.FLOW_CONTROL_OFF:
-                this.flow = 0x00;
-            case FaBoUsbConst.FLOW_CONTROL_RTS_CTS:
-                this.flow = 0x01;
-            case FaBoUsbConst.FLOW_CONTROL_DSR_DTR:
-                this.flow = 0x02;
-            case FaBoUsbConst.FLOW_CONTROL_XON_XOFF:
-                this.flow = 0x03;
-                //settingValue = settingValue | 0x03 << 6;
-            default:
-                this.flow = 0x00;
-        }
-    }
-
-    public byte[] getParams() {
-        int settingValue = this.parityBit | this.stopBit << 3 | this.flow << 6;
-        byte params[] = new byte[]{(byte)(baudrate & 255),
-                (byte)(baudrate >> 8 & 255),
-                (byte)(baudrate >> 16 & 255),
-                (byte)(baudrate >> 24 & 255),
-                (byte)0,
-                (byte)settingValue,
-                (byte)bitrate};
-
-        return params;
+        usbParams.setFlow(flow);
     }
 
 
@@ -565,14 +492,15 @@ public class FaBoUsbManager {
                     || deviceType == FaBoUsbConst.TYPE_ARDUINO_CC_UNO
                     || deviceType == FaBoUsbConst.TYPE_GENUINO_UNO) {
                 DriverInterface driver = new Arduino();
-                driver.setParameter(connection, getParams());
+                driver.setParameter(connection, usbParams);
             } else if(deviceType == FaBoUsbConst.TYPE_G27){
                 DriverInterface driver = new G27();
                 setBaudrate(FaBoUsbConst.BAUNDRATE_57600);
-                driver.setParameter(connection, getParams());
-            } else if(deviceType == FaBoUsbConst.TYPE_MONOSTICK){
-                DriverInterface driver = new Monostick();
-                driver.setParameter(connection, getParams());
+                driver.setParameter(connection, usbParams);
+            } else if(deviceType == FaBoUsbConst.TYPE_FT232R){
+                Log.d(TAG, "FT232R Driver");
+                DriverInterface driver = new FT232R();
+                driver.setParameter(connection, usbParams);
             }
 
             this.listener.onStatusChanged(mDevice, FaBoUsbConst.CONNECTED);
@@ -588,11 +516,18 @@ public class FaBoUsbManager {
                 }
 
                 int length = connection.bulkTransfer(endpointIN, readBuffer, readBuffer.length, 0);
-                if (length > 0) {
-                    byte[] read = new byte[length];
-                    System.arraycopy(readBuffer, 0, read, 0, length);
-
-                    this.listener.readBuffer(mDevice.getDeviceId(), read);
+                if (deviceType == FaBoUsbConst.TYPE_FT232R) {
+                    if(length > 2) {
+                        byte[] read = new byte[length - 2];
+                        System.arraycopy(readBuffer, 2, read, 0, length - 2);
+                        this.listener.readBuffer(mDevice.getDeviceId(), read);
+                    }
+                } else {
+                    if(length > 1) {
+                        byte[] read = new byte[length];
+                        System.arraycopy(readBuffer, 0, read, 0, length);
+                        this.listener.readBuffer(mDevice.getDeviceId(), read);
+                    }
                 }
             }
         }

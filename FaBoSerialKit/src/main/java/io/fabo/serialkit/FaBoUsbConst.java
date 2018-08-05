@@ -29,15 +29,15 @@ public class FaBoUsbConst {
     public static final int ARDUINO_LEONARDO_PID = 32822;
     public static final int G27_VID = 1133;
     public static final int G27_PID = 49819;
-    public static final int MONOSTICK_VID = 1027;
-    public static final int MONOSTICKK_PID = 24577;
+    public static final int FT232R_VID = 1027;
+    public static final int FT232R_PID = 24577;
     // Type of usb device.
     public static final int TYPE_ARDUINO_UNO = 1;
     public static final int TYPE_ARDUINO_LEONARDO = 2;
     public static final int TYPE_ARDUINO_CC_UNO = 11;
     public static final int TYPE_GENUINO_UNO = 21;
     public static final int TYPE_G27 = 31;
-    public static final int TYPE_MONOSTICK = 41;
+    public static final int TYPE_FT232R = 41;
     public static final int TYPE_UNSUPPORTED = 99;
     // Baundrate
     public static final int BAUNDRATE_9600 = 9600;

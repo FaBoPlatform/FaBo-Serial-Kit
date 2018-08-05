@@ -16,12 +16,7 @@ android {
         release {}
     }
 }
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    testImplementation 'junit:junit:4.12'
-}
+
 
 def repo = new File(rootDir, "repository")
 
@@ -32,7 +27,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository url: "file://${repo.absolutePath}"
-            pom.version = '0.9.9'
+            pom.version = '1.0.0'
             pom.groupId = 'io.fabo'
             pom.artifactId = 'serialkit'
         }

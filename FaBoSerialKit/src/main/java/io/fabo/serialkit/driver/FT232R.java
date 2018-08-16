@@ -1,6 +1,8 @@
 package io.fabo.serialkit.driver;
 
 import android.hardware.usb.UsbDeviceConnection;
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 import io.fabo.serialkit.FaBoUsbConst;
@@ -8,6 +10,11 @@ import io.fabo.serialkit.FaBoUsbParams;
 
 public class FT232R implements DriverInterface {
 
+    private static final int FLOW_CTRL = 2;
+    private static final int FLOW_CTRL_DEFAULT = 0x0000;
+    private static final int MODEM_CTRL = 1;
+    private static final int DTR_HIGH = (1 | (0x1 << 8));
+    private static final int DTR_LOW = (0 | (0x1 << 8));
     Map<Integer, Float> mapBuandrate = new HashMap<Integer, Float>() {
         {
             put(FaBoUsbConst.BAUNDRATE_9600, (float) 321.5);
@@ -27,9 +34,9 @@ public class FT232R implements DriverInterface {
 
     public void setParameter(UsbDeviceConnection connection, FaBoUsbParams usbParams){
         // Reset.
-        int result = connection.controlTransfer(0x40, RESET_REQUEST, 0, 0 /* index */, null, 0, TIMEOUT);
+        int result = connection.controlTransfer(0x40, RESET_REQUEST, 0, 0, null, 0, TIMEOUT);
         if(result == -1) {
-            connection.controlTransfer(0x80, RESET_REQUEST, 0, 0 /* index */, null, 0, TIMEOUT);
+            connection.controlTransfer(0x80, RESET_REQUEST, 0, 0, null, 0, TIMEOUT);
         }
 
         float buadrate = mapBuandrate.get(usbParams.getBaudrate());
@@ -44,6 +51,32 @@ public class FT232R implements DriverInterface {
         result = connection.controlTransfer(0x40,  DATA_REQUEST, configValue, 0, null, 0, TIMEOUT);
         if(result == -1) {
             connection.controlTransfer(0x80,  DATA_REQUEST, configValue, 0, null, 0, TIMEOUT);
+        }
+    }
+
+    @Override
+    public void setFlowControl(UsbDeviceConnection connection, int type) {
+        switch (type) {
+            case(ENABLE_DTR):
+                int result = connection.controlTransfer(0x40, FLOW_CTRL, FLOW_CTRL_DEFAULT, 2, null, 0, TIMEOUT);
+                if(result == -1) {
+                    connection.controlTransfer(0x80, FLOW_CTRL, FLOW_CTRL_DEFAULT, 2, null, 0, TIMEOUT);
+                }
+        }
+    }
+
+    @Override
+    public void setDTR(UsbDeviceConnection connection, boolean value) {
+        if(value == true) {
+            int result = connection.controlTransfer(0x40, MODEM_CTRL, DTR_HIGH, 0, null, 0, TIMEOUT);
+            if(result == -1) {
+                connection.controlTransfer(0x80, MODEM_CTRL, DTR_HIGH, 0, null, 0, TIMEOUT);
+            }
+        } else {
+            int result = connection.controlTransfer(0x40, MODEM_CTRL, DTR_LOW, 0, null, 0, TIMEOUT);
+            if(result == -1) {
+                connection.controlTransfer(0x80,MODEM_CTRL, DTR_LOW, 0, null, 0, TIMEOUT);
+            }
         }
     }
 

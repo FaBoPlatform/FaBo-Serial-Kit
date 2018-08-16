@@ -56,6 +56,10 @@ public class SerialExample extends AppCompatActivity implements FaBoUsbListenerI
             public void onClick(View v) {
                 if(mDevice != null) {
                     mFaBoUsbManager.connection(mDevice);
+                    mFaBoUsbManager.enableDTR();
+                    mFaBoUsbManager.setDTR(false);
+
+                    mFaBoUsbManager.setDTR(true);
                 }
             }
         });

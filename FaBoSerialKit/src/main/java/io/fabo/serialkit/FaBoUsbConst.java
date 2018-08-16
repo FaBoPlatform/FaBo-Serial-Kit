@@ -31,6 +31,8 @@ public class FaBoUsbConst {
     public static final int G27_PID = 49819;
     public static final int FT232R_VID = 1027;
     public static final int FT232R_PID = 24577;
+    public static final int FT232RQ_PID = 24597;
+
     // Type of usb device.
     public static final int TYPE_ARDUINO_UNO = 1;
     public static final int TYPE_ARDUINO_LEONARDO = 2;

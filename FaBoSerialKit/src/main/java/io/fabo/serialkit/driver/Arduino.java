@@ -33,6 +33,16 @@ public class Arduino implements DriverInterface {
                 TIMEOUT);
     }
 
+    @Override
+    public void setFlowControl(UsbDeviceConnection connection, int type) {
+
+    }
+
+    @Override
+    public void setDTR(UsbDeviceConnection connection, boolean value) {
+
+    }
+
     private byte[] getParams(FaBoUsbParams usbParams) {
         int settingValue = 0;
 

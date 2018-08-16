@@ -182,6 +182,8 @@ public class FaBoUsbManager {
             deviceType = FaBoUsbConst.TYPE_G27;
         } else if (deviceVID == FaBoUsbConst.FT232R_VID && devicePID == FaBoUsbConst.FT232R_PID) {
             deviceType = FaBoUsbConst.TYPE_FT232R;
+        } else if (deviceVID == FaBoUsbConst.FT232R_VID && devicePID == FaBoUsbConst.FT232RQ_PID) {
+            deviceType = FaBoUsbConst.TYPE_FT232R;
         } else {
             listener.onFind(device, FaBoUsbConst.TYPE_UNSUPPORTED);
             return;
@@ -230,6 +232,7 @@ public class FaBoUsbManager {
      */
     public void connection(UsbDevice device) {
         mConnection =  new ConnectionThread(device, listener);
+        mConnection.connect();
         mConnection.start();
     }
 
@@ -333,6 +336,26 @@ public class FaBoUsbManager {
     }
 
     /**
+     * Enable DTR.
+     */
+    public void enableDTR() {
+        //unregisterMyReceiver();
+        if(mConnection != null) {
+            mConnection.enableDTR();
+        }
+    }
+
+    /**
+     * Close connection.
+     */
+    public void setDTR(boolean value) {
+        //unregisterMyReceiver();
+        if(mConnection != null) {
+            mConnection.setDTR(value);
+        }
+    }
+
+    /**
      * Add listener.
      *
      * @param listener
@@ -409,6 +432,11 @@ public class FaBoUsbManager {
         public boolean runningFlag;
 
         /**
+         * Driver
+         */
+        private DriverInterface driver;
+
+        /**
          * Constructor.
          * @param device UsbDevice.
          * @param listener EventListener.
@@ -419,9 +447,7 @@ public class FaBoUsbManager {
             runningFlag = true;
         }
 
-        @Override
-        public void run() {
-
+        public void connect(){
             if(DEBUG) {
                 Log.d(TAG, "-------------------");
                 Log.d(TAG, "[UsbSerial] This device");
@@ -491,19 +517,23 @@ public class FaBoUsbManager {
                     || deviceType == FaBoUsbConst.TYPE_ARDUINO_LEONARDO
                     || deviceType == FaBoUsbConst.TYPE_ARDUINO_CC_UNO
                     || deviceType == FaBoUsbConst.TYPE_GENUINO_UNO) {
-                DriverInterface driver = new Arduino();
+                driver = new Arduino();
                 driver.setParameter(connection, usbParams);
             } else if(deviceType == FaBoUsbConst.TYPE_G27){
-                DriverInterface driver = new G27();
+                driver = new G27();
                 setBaudrate(FaBoUsbConst.BAUNDRATE_57600);
                 driver.setParameter(connection, usbParams);
             } else if(deviceType == FaBoUsbConst.TYPE_FT232R){
                 Log.d(TAG, "FT232R Driver");
-                DriverInterface driver = new FT232R();
-                driver.setParameter(connection, usbParams);
+                this.driver = new FT232R();
+                this.driver.setParameter(connection, usbParams);
             }
 
             this.listener.onStatusChanged(mDevice, FaBoUsbConst.CONNECTED);
+        }
+
+        @Override
+        public void run() {
 
             while (true) {
                 synchronized (this) {
@@ -522,6 +552,7 @@ public class FaBoUsbManager {
                         System.arraycopy(readBuffer, 2, read, 0, length - 2);
                         this.listener.readBuffer(mDevice.getDeviceId(), read);
                     }
+
                 } else {
                     if(length > 1) {
                         byte[] read = new byte[length];
@@ -563,6 +594,18 @@ public class FaBoUsbManager {
                 try {
                     connection.close();
                 } catch(Exception e){}
+            }
+        }
+
+        public void setDTR(boolean value) {
+            if(connection != null && driver != null) {
+                driver.setDTR(connection, value);
+            }
+        }
+
+        public void enableDTR() {
+            if(connection != null && driver != null) {
+                driver.setFlowControl(connection, DriverInterface.ENABLE_DTR);
             }
         }
     }

@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     ...
-    implementation 'com.github.FaBoPlatform:FaBo-Serial-Kit:1.0.0'
+    implementation 'com.github.FaBoPlatform:FaBo-Serial-Kit:1.0.2'
 }
 ```
